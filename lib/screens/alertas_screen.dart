@@ -6,6 +6,7 @@ import '../services/alerta_service.dart';
 import '../models/alerta_model.dart';
 import 'alerta_detalle_screen.dart';
 import '../services/alert_notifier_service.dart';
+import 'package:intl/intl.dart';
 
 class AlertasScreen extends StatefulWidget {
   const AlertasScreen({super.key});
@@ -428,7 +429,9 @@ class _AlertasScreenState extends State<AlertasScreen> {
                     itemCount: _filtradas.length,
                     itemBuilder: (_, index) {
                       final alerta = _filtradas[index];
-                      final fechaHora = alerta.fecha.toLocal().toString().split('.')[0];
+                      //final fechaHora = alerta.fecha.toLocal().toString().split('.')[0];
+                      final fechaLocal = alerta.fecha.toLocal();
+                      final fechaFormateada = DateFormat('yyyy-MM-dd HH:mm').format(fechaLocal);
                       final diasDiferencia = DateTime.now().difference(alerta.fecha).inDays;
                       
                       return Card(
@@ -490,7 +493,7 @@ class _AlertasScreenState extends State<AlertasScreen> {
                                         const Icon(Icons.calendar_today, size: 16, color: Color(0xFF666666)),
                                         const SizedBox(width: 4),
                                         Text(
-                                          fechaHora,
+                                          fechaFormateada,
                                           style: const TextStyle(color: Color(0xFF666666)),
                                         ),
                                         const SizedBox(width: 12),

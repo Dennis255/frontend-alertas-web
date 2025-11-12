@@ -32,12 +32,17 @@ class Alerta {
       nivel: json['nivel'],
       ubicacion: json['ubicacion'],
       descripcion: json['descripcion'],
-      fecha: DateTime.parse(json['fecha']),
+      
+      // ✅ LA CORRECCIÓN:
+      // Simplemente parsea el string. Dart ya sabe que la 'Z' significa UTC.
+      // Quita el '+ 'Z'' y el '.toLocal()'.
+      fecha: DateTime.parse(json['fecha']), 
+
       temperatura: (json['temperatura'] as num?)?.toDouble(),
       humedad: (json['humedad'] as num?)?.toDouble(),
       precipitacion: (json['precipitacion'] as num?)?.toDouble(),
       viento: (json['viento'] as num?)?.toDouble(),
-      vistaPorUsuario: json['vista_por_usuario'] ?? false, // ✅ Lógica nueva
+      vistaPorUsuario: json['vista_por_usuario'] ?? false,
     );
   }
 }

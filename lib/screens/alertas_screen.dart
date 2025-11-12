@@ -23,7 +23,12 @@ class _AlertasScreenState extends State<AlertasScreen> {
   String _rangoFecha = 'Todos';
   late Timer _timer;
 
-  final List<String> _rangoFechas = ['Todos', 'Hoy', 'Últimos 7 días', 'Últimos 30 días'];
+  final List<String> _rangoFechas = [
+    'Todos',
+    'Hoy',
+    'Últimos 7 días',
+    'Últimos 30 días',
+  ];
 
   @override
   void initState() {
@@ -77,26 +82,31 @@ class _AlertasScreenState extends State<AlertasScreen> {
 
   void _aplicarFiltro() {
     setState(() {
-      _filtradas = _todas.where((alerta) {
-        final tipoFiltrado = _normalizarTipo(alerta.tipo);
-        final tipoOk = _tipoSeleccionado == 'Todos' || tipoFiltrado == _tipoSeleccionado;
+      _filtradas =
+          _todas.where((alerta) {
+            final tipoFiltrado = _normalizarTipo(alerta.tipo);
+            final tipoOk =
+                _tipoSeleccionado == 'Todos' ||
+                tipoFiltrado == _tipoSeleccionado;
 
-        final ahora = DateTime.now();
-        final fecha = alerta.fecha;
-        bool fechaOk = true;
+            final ahora = DateTime.now();
+            final fecha = alerta.fecha;
+            bool fechaOk = true;
 
-        if (_rangoFecha == 'Hoy') {
-          final inicioHoy = DateTime(ahora.year, ahora.month, ahora.day);
-          final finHoy = inicioHoy.add(const Duration(days: 1)).subtract(const Duration(milliseconds: 1));
-          fechaOk = fecha.isAfter(inicioHoy) && fecha.isBefore(finHoy);
-        } else if (_rangoFecha == 'Últimos 7 días') {
-          fechaOk = fecha.isAfter(ahora.subtract(const Duration(days: 7)));
-        } else if (_rangoFecha == 'Últimos 30 días') {
-          fechaOk = fecha.isAfter(ahora.subtract(const Duration(days: 30)));
-        }
+            if (_rangoFecha == 'Hoy') {
+              final inicioHoy = DateTime(ahora.year, ahora.month, ahora.day);
+              final finHoy = inicioHoy
+                  .add(const Duration(days: 1))
+                  .subtract(const Duration(milliseconds: 1));
+              fechaOk = fecha.isAfter(inicioHoy) && fecha.isBefore(finHoy);
+            } else if (_rangoFecha == 'Últimos 7 días') {
+              fechaOk = fecha.isAfter(ahora.subtract(const Duration(days: 7)));
+            } else if (_rangoFecha == 'Últimos 30 días') {
+              fechaOk = fecha.isAfter(ahora.subtract(const Duration(days: 30)));
+            }
 
-        return tipoOk && fechaOk;
-      }).toList();
+            return tipoOk && fechaOk;
+          }).toList();
     });
   }
 
@@ -161,7 +171,8 @@ class _AlertasScreenState extends State<AlertasScreen> {
             options: MapOptions(
               center: punto,
               zoom: 13,
-              interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+              interactiveFlags:
+                  InteractiveFlag.pinchZoom | InteractiveFlag.drag,
             ),
             children: [
               TileLayer(
@@ -175,7 +186,11 @@ class _AlertasScreenState extends State<AlertasScreen> {
                     point: punto,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
@@ -187,7 +202,8 @@ class _AlertasScreenState extends State<AlertasScreen> {
   }
 
   Widget _buildFiltros() {
-    final tiposUnicos = _todas.map((a) => _normalizarTipo(a.tipo)).toSet().toList();
+    final tiposUnicos =
+        _todas.map((a) => _normalizarTipo(a.tipo)).toSet().toList();
     tiposUnicos.sort();
     final tiposDropdown = ['Todos', ...tiposUnicos];
 
@@ -232,10 +248,20 @@ class _AlertasScreenState extends State<AlertasScreen> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  items: tiposDropdown.map((t) => DropdownMenuItem<String>(
-                    value: t,
-                    child: Text(t, style: const TextStyle(color: Color(0xFF333333))),
-                  )).toList(),
+                  items:
+                      tiposDropdown
+                          .map(
+                            (t) => DropdownMenuItem<String>(
+                              value: t,
+                              child: Text(
+                                t,
+                                style: const TextStyle(
+                                  color: Color(0xFF333333),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (String? val) {
                     if (val != null) {
                       setState(() {
@@ -260,10 +286,20 @@ class _AlertasScreenState extends State<AlertasScreen> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  items: _rangoFechas.map((f) => DropdownMenuItem<String>(
-                    value: f,
-                    child: Text(f, style: const TextStyle(color: Color(0xFF333333))),
-                  )).toList(),
+                  items:
+                      _rangoFechas
+                          .map(
+                            (f) => DropdownMenuItem<String>(
+                              value: f,
+                              child: Text(
+                                f,
+                                style: const TextStyle(
+                                  color: Color(0xFF333333),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (String? val) {
                     if (val != null) {
                       setState(() {
@@ -317,10 +353,7 @@ class _AlertasScreenState extends State<AlertasScreen> {
               const SizedBox(height: 4),
               Text(
                 'Última actualización: ${DateTime.now().toString().substring(0, 16)}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.white70,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.white70),
               ),
             ],
           ),
@@ -334,7 +367,8 @@ class _AlertasScreenState extends State<AlertasScreen> {
               IconButton(
                 icon: const Icon(Icons.home, color: Colors.white),
                 tooltip: 'Ir al Dashboard',
-                onPressed: () => Navigator.pushReplacementNamed(context, '/dashboard'),
+                onPressed:
+                    () => Navigator.pushReplacementNamed(context, '/dashboard'),
               ),
               IconButton(
                 icon: const Icon(Icons.info_outline, color: Colors.white),
@@ -342,20 +376,21 @@ class _AlertasScreenState extends State<AlertasScreen> {
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Información'),
-                      content: const Text(
-                        'Este panel muestra alertas climáticas en tiempo real. '
-                        'Puedes filtrar por tipo y rango de fechas. '
-                        'Las alertas se actualizan automáticamente cada 30 segundos.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Entendido'),
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Información'),
+                          content: const Text(
+                            'Este panel muestra alertas climáticas en tiempo real. '
+                            'Puedes filtrar por tipo y rango de fechas. '
+                            'Las alertas se actualizan automáticamente cada 30 segundos.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Entendido'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
                   );
                 },
               ),
@@ -376,10 +411,7 @@ class _AlertasScreenState extends State<AlertasScreen> {
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Color(0xFF3366CC),
-        ),
+        style: const TextStyle(fontSize: 12, color: Color(0xFF3366CC)),
       ),
     );
   }
@@ -393,178 +425,226 @@ class _AlertasScreenState extends State<AlertasScreen> {
           _buildHeader(),
           _buildFiltros(),
           Expanded(
-            child: _filtradas.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.warning_amber, size: 48, color: Color(0xFF3366CC)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No hay alertas para los filtros seleccionados',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey[600],
+            child:
+                _filtradas.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber,
+                            size: 48,
+                            color: Color(0xFF3366CC),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _tipoSeleccionado = 'Todos';
-                              _rangoFecha = 'Todos';
-                              _aplicarFiltro();
-                            });
-                          },
-                          child: const Text(
-                            'Mostrar todas las alertas',
-                            style: TextStyle(color: Color(0xFF3366CC)),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No hay alertas para los filtros seleccionados',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _filtradas.length,
-                    itemBuilder: (_, index) {
-                      final alerta = _filtradas[index];
-                      //final fechaHora = alerta.fecha.toLocal().toString().split('.')[0];
-                      final fechaLocal = alerta.fecha.toLocal();
-                      final fechaFormateada = DateFormat('yyyy-MM-dd HH:mm').format(fechaLocal);
-                      final diasDiferencia = DateTime.now().difference(alerta.fecha).inDays;
-                      
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        color: _colorTipo(alerta.tipo),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 2,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AlertaDetalleScreen(alerta: alerta, rol: "admin"),
-                              ),
-                            );
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "${_iconoTipo(alerta.tipo)} ${alerta.tipo}",
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: Color(0xFF333333),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: _colorNivel(alerta.nivel),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Text(
-                                            alerta.nivel.toUpperCase(),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.calendar_today, size: 16, color: Color(0xFF666666)),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          fechaFormateada,
-                                          style: const TextStyle(color: Color(0xFF666666)),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        const Icon(Icons.access_time, size: 16, color: Color(0xFF666666)),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          diasDiferencia == 0 
-                                            ? 'Hoy' 
-                                            : 'Hace $diasDiferencia día${diasDiferencia == 1 ? '' : 's'}',
-                                          style: const TextStyle(color: Color(0xFF666666)),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      alerta.descripcion,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF444444),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _tipoSeleccionado = 'Todos';
+                                _rangoFecha = 'Todos';
+                                _aplicarFiltro();
+                              });
+                            },
+                            child: const Text(
+                              'Mostrar todas las alertas',
+                              style: TextStyle(color: Color(0xFF3366CC)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _filtradas.length,
+                      itemBuilder: (_, index) {
+                        final alerta = _filtradas[index];
+                        //final fechaHora = alerta.fecha.toLocal().toString().split('.')[0];
+                        /*final fechaFormateada = DateFormat(
+                          'yyyy-MM-dd HH:mm',
+                        ).format(alerta.fecha.toLocal());
+*/
+                        final fechaFormateada = DateFormat(
+                          'yyyy-MM-dd HH:mm',
+                        ).format(alerta.fecha.toLocal());
+
+                        final diasDiferencia =
+                            DateTime.now().difference(alerta.fecha).inDays;
+
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          color: _colorTipo(alerta.tipo),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => AlertaDetalleScreen(
+                                        alerta: alerta,
+                                        rol: "admin",
                                       ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: [
-                                        if (alerta.temperatura != null)
-                                          _buildInfoChip('🌡️ ${alerta.temperatura}°C'),
-                                        if (alerta.humedad != null)
-                                          _buildInfoChip('💧 ${alerta.humedad}% humedad'),
-                                        if (alerta.precipitacion != null)
-                                          _buildInfoChip('☔ ${alerta.precipitacion} mm'),
-                                        if (alerta.viento != null)
-                                          _buildInfoChip('🌬️ ${alerta.viento} km/h'),
-                                      ],
-                                    ),
-                                  ],
                                 ),
-                              ),
-                              if (_coordValidas(alerta.ubicacion)) _miniMapa(alerta.ubicacion),
-                              Padding(
-                                padding: const EdgeInsets.all(16).copyWith(top: 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        '📍 ${alerta.ubicacion}',
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "${_iconoTipo(alerta.tipo)} ${alerta.tipo}",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Color(0xFF333333),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _colorNivel(alerta.nivel),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              alerta.nivel.toUpperCase(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.calendar_today,
+                                            size: 16,
+                                            color: Color(0xFF666666),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            fechaFormateada,
+                                            style: const TextStyle(
+                                              color: Color(0xFF666666),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          const Icon(
+                                            Icons.access_time,
+                                            size: 16,
+                                            color: Color(0xFF666666),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            diasDiferencia == 0
+                                                ? 'Hoy'
+                                                : 'Hace $diasDiferencia día${diasDiferencia == 1 ? '' : 's'}',
+                                            style: const TextStyle(
+                                              color: Color(0xFF666666),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        alerta.descripcion,
                                         style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xFF666666),
+                                          fontSize: 14,
+                                          color: Color(0xFF444444),
                                         ),
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    const Text(
-                                      'Ver detalles →',
-                                      style: TextStyle(
-                                        color: Color(0xFF3366CC),
-                                        fontWeight: FontWeight.bold,
+                                      const SizedBox(height: 12),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          if (alerta.temperatura != null)
+                                            _buildInfoChip(
+                                              '🌡️ ${alerta.temperatura}°C',
+                                            ),
+                                          if (alerta.humedad != null)
+                                            _buildInfoChip(
+                                              '💧 ${alerta.humedad}% humedad',
+                                            ),
+                                          if (alerta.precipitacion != null)
+                                            _buildInfoChip(
+                                              '☔ ${alerta.precipitacion} mm',
+                                            ),
+                                          if (alerta.viento != null)
+                                            _buildInfoChip(
+                                              '🌬️ ${alerta.viento} km/h',
+                                            ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                                if (_coordValidas(alerta.ubicacion))
+                                  _miniMapa(alerta.ubicacion),
+                                Padding(
+                                  padding: const EdgeInsets.all(
+                                    16,
+                                  ).copyWith(top: 0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '📍 ${alerta.ubicacion}',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xFF666666),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Ver detalles →',
+                                        style: TextStyle(
+                                          color: Color(0xFF3366CC),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),

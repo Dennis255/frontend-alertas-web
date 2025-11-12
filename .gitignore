@@ -2,7 +2,6 @@
 .dart_tool/
 .packages
 .pub-cache/
-build/
 
 # Archivos de IDEs
 .idea/
@@ -13,4 +12,5 @@ build/
 *.swp
 
 # Excepción para Render: incluir la carpeta web compilada
+/build/*
 !/build/web/

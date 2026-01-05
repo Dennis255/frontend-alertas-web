@@ -257,16 +257,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Color _getColorForAlertLevel(String nivel) {
-    switch (nivel.toLowerCase()) {
-      case 'alto':
-        return Colors.red;
-      case 'medio':
-        return Colors.orange;
-      case 'bajo':
-        return Colors.yellow[700]!;
-      default:
-        return Colors.blue;
-    }
+  Color _getColorForAlertLevel(String? nivel) {
+  switch (nivel?.toLowerCase().trim()) {
+    case 'alto':
+      return Colors.red;   // ISO: Peligro
+    case 'medio':
+      return Colors.amber; // ISO: Precaución (Amarillo/Ámbar)
+    case 'bajo':
+      return Colors.green; // ISO: Seguridad (Verde)
+    default:
+      return Colors.grey;  // ISO: Sin información (Gris)
   }
+}
 }

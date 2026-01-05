@@ -264,15 +264,28 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
   }
 
   Color _getNivelColor(String? nivel) {
-    switch (nivel?.toLowerCase()) {
-      case 'alto':
-        return Colors.red;
-      case 'medio':
-        return Colors.orange;
-      case 'bajo':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
+  // Normalizamos el texto para evitar errores por mayúsculas/minúsculas
+  switch (nivel?.toLowerCase().trim()) {
+    
+    // NIVEL ALTO -> ROJO (ISO: Peligro / Acción Inmediata)
+    case 'alto':
+      return Colors.red; 
+      // Opcional: Color(0xFFD32F2F) para un rojo con mejor contraste (Material 700)
+
+    // NIVEL MEDIO -> ÁMBAR (ISO: Precaución / Estar Atento)
+    // Se cambia Orange por Amber porque la ISO define el nivel medio como "Amarillo/Precaución"
+    case 'medio':
+      return Colors.amber; 
+      // Opcional: Color(0xFFFFA000) (Amber 700) para asegurar legibilidad en fondo blanco
+
+    // NIVEL BAJO -> VERDE (ISO: Seguridad / Sin Riesgo)
+    case 'bajo':
+      return Colors.green; 
+      // Opcional: Color(0xFF388E3C) para un verde menos brillante y más legible (Material 700)
+
+    // ESTADO DESCONOCIDO -> GRIS (ISO: Sin información)
+    default:
+      return Colors.grey;
   }
+}
 }

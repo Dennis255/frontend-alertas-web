@@ -29,7 +29,7 @@ class _ReportesScreenState extends State<ReportesScreen> {
     'Inundación': Colors.indigo.shade600,
     'Manual': Colors.grey.shade600,
     'Alto': Colors.red.shade600,
-    'Moderado': Colors.orange.shade400,
+    'Moderado': Colors.amber.shade600,
     'Bajo': Colors.green.shade600,
     'Otro': Colors.grey.shade400,
   };

@@ -18,17 +18,17 @@ class MapaAlertasScreen extends StatelessWidget {
   });
 
   Color _getColorForAlertLevel(String? nivel) {
-    switch (nivel?.toLowerCase()) {
-      case 'alto':
-        return Colors.red;
-      case 'medio':
-        return Colors.orange;
-      case 'bajo':
-        return Colors.yellow;
-      default:
-        return Colors.blue;
-    }
+  switch (nivel?.toLowerCase().trim()) {
+    case 'alto':
+      return Colors.red;   // ISO: Peligro
+    case 'medio':
+      return Colors.amber; // ISO: Precaución (Amarillo/Ámbar)
+    case 'bajo':
+      return Colors.green; // ISO: Seguridad (Verde)
+    default:
+      return Colors.grey;  // ISO: Sin información (Gris)
   }
+}
 
   Future<void> _openInExternalMaps(LatLng point) async {
     final url = Uri.parse(

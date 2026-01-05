@@ -77,14 +77,13 @@ class _TablaAlertasScreenState extends State<TablaAlertasScreen> {
     html.Url.revokeObjectUrl(url);
   }
 
-  Color _nivelColor(String nivel) {
-    final n = nivel.toLowerCase();
-    if (n.contains('crítico')) return Colors.red.shade400;
-    if (n.contains('alto')) return Colors.orange.shade400;
-    if (n.contains('moderado')) return Colors.yellow.shade600;
-    if (n.contains('bajo')) return Colors.green.shade400;
-    return Colors.grey.shade300;
-  }
+ Color _nivelColor(String nivel) {
+  final n = nivel.toLowerCase().trim();
+  if (n.contains('crítico') || n.contains('alto')) return Colors.red;
+  if (n.contains('moderado') || n.contains('medio')) return Colors.amber;
+  if (n.contains('bajo')) return Colors.green;
+  return Colors.grey;
+}
 
   Color _tipoColor(String tipo) {
     final t = tipo.toLowerCase();

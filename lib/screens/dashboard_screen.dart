@@ -53,7 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       final response = await http.get(
         Uri.parse(
-            '${GlobalConfig.baseURL}/api/alertas/openweather?ciudad=$_ciudadSeleccionada')
+          '${GlobalConfig.baseURL}/api/alertas/openweather?ciudad=$_ciudadSeleccionada',
+        ),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -98,12 +99,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const NeverScrollableScrollPhysics(), // No queremos scroll anidado
             itemCount: items.length,
             itemBuilder: (context, index) => items[index],
-            separatorBuilder: (context, index) => const Divider(
-              height: 1,
-              thickness: 1,
-              indent: 16, // Divisor no toca los bordes
-              endIndent: 16,
-            ),
+            separatorBuilder:
+                (context, index) => const Divider(
+                  height: 1,
+                  thickness: 1,
+                  indent: 16, // Divisor no toca los bordes
+                  endIndent: 16,
+                ),
           ),
           const SizedBox(height: 8), // Pequeño padding inferior
         ],
@@ -137,13 +139,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: DropdownButtonFormField<String>(
               value: _ciudadSeleccionada,
-              items: coordenadasCiudades.keys
-                  .map((ciudad) => DropdownMenuItem<String>(
-                        value: ciudad,
-                        child: Text(ciudad,
-                            style: TextStyle(color: Colors.blue.shade800)),
-                      ))
-                  .toList(),
+              items:
+                  coordenadasCiudades.keys
+                      .map(
+                        (ciudad) => DropdownMenuItem<String>(
+                          value: ciudad,
+                          child: Text(
+                            ciudad,
+                            style: TextStyle(color: Colors.blue.shade800),
+                          ),
+                        ),
+                      )
+                      .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() {
@@ -177,7 +184,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // 3. Información del Clima
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // Padding ajustado
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              0,
+              16,
+              16,
+            ), // Padding ajustado
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -190,13 +202,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(height: 8),
                 _buildWeatherInfo(
-                    '🌡️', 'Temperatura', '${clima?['temperatura'] ?? '...'}°C'),
+                  '🌡️',
+                  'Temperatura',
+                  '${clima?['temperatura'] ?? '...'}°C',
+                ),
                 _buildWeatherInfo(
-                    '💧', 'Humedad', '${clima?['humedad'] ?? '...'}%'),
-                _buildWeatherInfo('🌧️', 'Precipitación',
-                    '${clima?['precipitacion'] ?? '...'} mm'),
+                  '💧',
+                  'Humedad',
+                  '${clima?['humedad'] ?? '...'}%',
+                ),
                 _buildWeatherInfo(
-                    '💨', 'Viento', '${clima?['viento'] ?? '...'} km/h'),
+                  '🌧️',
+                  'Precipitación',
+                  '${clima?['precipitacion'] ?? '...'} mm',
+                ),
+                _buildWeatherInfo(
+                  '💨',
+                  'Viento',
+                  '${clima?['viento'] ?? '...'} km/h',
+                ),
               ],
             ),
           ),
@@ -265,28 +289,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 FlutterMap(
                   mapController: _mapController,
                   options: MapOptions(
-                      center: centro,
-                      zoom: 13,
-                      interactiveFlags: InteractiveFlag.all),
+                    center: centro,
+                    zoom: 13,
+                    interactiveFlags: InteractiveFlag.all,
+                  ),
                   children: [
-                   TileLayer(
-  // Si el usuario elige satélite, muestra ArcGIS Satélite.
-  // Si elige relieve, muestra ArcGIS World Topo (Este tiene el relieve y las "franjas")
-  urlTemplate: _mapaActual == 'satelite'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-  
-  // Esri no usa subdominios a,b,c como OpenTopoMap, así que quitamos esa línea.
-  userAgentPackageName: 'com.tesis.alertas',
-),
+                    TileLayer(
+                      // Si el usuario elige satélite, muestra ArcGIS Satélite.
+                      // Si elige relieve, muestra ArcGIS World Topo (Este tiene el relieve y las "franjas")
+                      urlTemplate:
+                          _mapaActual == 'satelite'
+                              ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                              : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+
+                      // Esri no usa subdominios a,b,c como OpenTopoMap, así que quitamos esa línea.
+                      userAgentPackageName: 'com.tesis.alertas',
+                    ),
                     MarkerLayer(
                       markers: [
                         Marker(
                           point: centro,
                           width: 40,
                           height: 40,
-                          child: const Icon(Icons.location_on,
-                              color: Colors.red, size: 40),
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.red,
+                            size: 40,
+                          ),
                         ),
                       ],
                     ),
@@ -315,12 +344,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onPressed: () {
                           setState(() {
                             _mapaActual =
-                                _mapaActual == 'relieve' ? 'satelite' : 'relieve';
+                                _mapaActual == 'relieve'
+                                    ? 'satelite'
+                                    : 'relieve';
                           });
                         },
-                        child: Icon(_mapaActual == 'relieve'
-                            ? Icons.satellite
-                            : Icons.terrain),
+                        child: Icon(
+                          _mapaActual == 'relieve'
+                              ? Icons.satellite
+                              : Icons.terrain,
+                        ),
                       ),
                     ],
                   ),
@@ -353,8 +386,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing:
-          Icon(Icons.arrow_forward_ios, size: 16, color: Colors.blue.shade600),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Colors.blue.shade600,
+      ),
       onTap: onTap,
     );
   }
@@ -376,28 +412,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
           'Temperatura',
           'Humedad',
           'Precipitación',
-          'Viento'
+          'Viento',
         ],
-        ...datos.map((a) => [
-              a['id'],
-              a['tipo'],
-              a['nivel'],
-              a['ubicacion'],
-              a['descripcion'],
-              a['fecha']?.toString().split('T')[0] ?? '',
-              a['temperatura'] ?? '',
-              a['humedad'] ?? '',
-              a['precipitacion'] ?? '',
-              a['viento'] ?? ''
-            ]),
+        ...datos.map(
+          (a) => [
+            a['id'],
+            a['tipo'],
+            a['nivel'],
+            a['ubicacion'],
+            a['descripcion'],
+            a['fecha']?.toString().split('T')[0] ?? '',
+            a['temperatura'] ?? '',
+            a['humedad'] ?? '',
+            a['precipitacion'] ?? '',
+            a['viento'] ?? '',
+          ],
+        ),
       ];
 
       final csv = const ListToCsvConverter().convert(filas);
       final blob = html.Blob([csv]);
       final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute("download", "respaldo_alertas.csv")
-        ..click();
+      final anchor =
+          html.AnchorElement(href: url)
+            ..setAttribute("download", "respaldo_alertas.csv")
+            ..click();
       html.Url.revokeObjectUrl(url);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -414,42 +453,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildGrupo('🚨 Gestión de Alertas', [
-            _buildTile('Ver Alertas', Icons.warning_amber,
-                () => Navigator.pushNamed(context, '/alertas')),
-            _buildTile('Crear Alerta', Icons.add_alert,
-                () => Navigator.pushNamed(context, '/crear-alerta')),
-            _buildTile('Tabla Completa de Alertas', Icons.table_chart,
-                () => Navigator.pushNamed(context, '/tabla-alertas')),
+            _buildTile(
+              'Ver Alertas',
+              Icons.warning_amber,
+              () => Navigator.pushNamed(context, '/alertas'),
+            ),
+            _buildTile(
+              'Crear Alerta',
+              Icons.add_alert,
+              () => Navigator.pushNamed(context, '/crear-alerta'),
+            ),
+            _buildTile(
+              'Tabla Completa de Alertas',
+              Icons.table_chart,
+              () => Navigator.pushNamed(context, '/tabla-alertas'),
+            ),
           ]),
           _buildGrupo('📈 Estadísticas y Reportes', [
-            _buildTile('Gráficas de Reportes', Icons.bar_chart,
-                () => Navigator.pushNamed(context, '/graficas-alertas')),
             _buildTile(
-                'Evolución de alertas por tipo',
-                Icons.show_chart,
-                () => Navigator.pushNamed(context, '/evolucion-lineas')),
+              'Gráficas de Reportes',
+              Icons.bar_chart,
+              () => Navigator.pushNamed(context, '/graficas-alertas'),
+            ),
             _buildTile(
-                'Uso de fuentes de datos',
-                Icons.pie_chart,
-                () => Navigator.pushNamed(context, '/estadisticas-fuentes')),
+              'Evolución de alertas por tipo',
+              Icons.show_chart,
+              () => Navigator.pushNamed(context, '/evolucion-lineas'),
+            ),
             _buildTile(
-                'Evolución diaria por fuente',
-                Icons.timeline,
-                () => Navigator.pushNamed(context, '/estadisticas-evolucion')),
+              'Uso de fuentes de datos',
+              Icons.pie_chart,
+              () => Navigator.pushNamed(context, '/estadisticas-fuentes'),
+            ),
+            _buildTile(
+              'Evolución diaria por fuente',
+              Icons.timeline,
+              () => Navigator.pushNamed(context, '/estadisticas-evolucion'),
+            ),
           ]),
           _buildGrupo('📍 Datos y Monitoreo', [
-            _buildTile('Alertas por Ubicación', Icons.map,
-                () => Navigator.pushNamed(context, '/reportes-ubicacion')),
-            _buildTile('Datos de Monitoreo', Icons.analytics_outlined,
-                () => Navigator.pushNamed(context, '/monitoreo')),
+            _buildTile(
+              'Alertas por Ubicación',
+              Icons.map,
+              () => Navigator.pushNamed(context, '/reportes-ubicacion'),
+            ),
+            _buildTile(
+              'Datos de Monitoreo',
+              Icons.analytics_outlined,
+              () => Navigator.pushNamed(context, '/monitoreo'),
+            ),
           ]),
           _buildGrupo('🛠️ Administración', [
-            _buildTile('Administrar Usuarios', Icons.admin_panel_settings,
-                () => Navigator.pushNamed(context, '/admin')),
-            _buildTile('Gestionar Umbrales', Icons.tune,
-                () => Navigator.pushNamed(context, '/umbrales')),
             _buildTile(
-                'Descargar Respaldo (CSV)', Icons.download, _descargarRespaldo),
+              'Administrar Usuarios',
+              Icons.admin_panel_settings,
+              () => Navigator.pushNamed(context, '/admin'),
+            ),
+            _buildTile(
+              'Gestionar Umbrales',
+              Icons.tune,
+              () => Navigator.pushNamed(context, '/umbrales'),
+            ),
+            _buildTile(
+              'Descargar Respaldo (CSV)',
+              Icons.download,
+              _descargarRespaldo,
+            ),
           ]),
         ],
       );
@@ -459,34 +528,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildGrupo('🚨 Gestión de Alertas', [
-            _buildTile('Ver Alertas', Icons.warning_amber,
-                () => Navigator.pushNamed(context, '/alertas')),
-            _buildTile('Crear Alerta', Icons.add_alert,
-                () => Navigator.pushNamed(context, '/crear-alerta')),
+            _buildTile(
+              'Ver Alertas',
+              Icons.warning_amber,
+              () => Navigator.pushNamed(context, '/alertas'),
+            ),
+            _buildTile(
+              'Crear Alerta',
+              Icons.add_alert,
+              () => Navigator.pushNamed(context, '/crear-alerta'),
+            ),
           ]),
           _buildGrupo('📊 Visualización de Reportes', [
-            _buildTile('Gráficas de Reportes', Icons.bar_chart,
-                () => Navigator.pushNamed(context, '/graficas-alertas')),
-            _buildTile('Ver Reportes', Icons.bar_chart,
-                () => Navigator.pushNamed(context, '/reportes')),
+            _buildTile(
+              'Gráficas de Reportes',
+              Icons.bar_chart,
+              () => Navigator.pushNamed(context, '/graficas-alertas'),
+            ),
+            _buildTile(
+              'Ver Reportes',
+              Icons.bar_chart,
+              () => Navigator.pushNamed(context, '/reportes'),
+            ),
           ]),
           _buildGrupo('📍 Datos y Ubicación', [
-            _buildTile('Ubicación de Alertas', Icons.map,
-                () => Navigator.pushNamed(context, '/reportes-ubicacion')),
-            _buildTile('Datos de Monitoreo', Icons.analytics_outlined,
-                () => Navigator.pushNamed(context, '/monitoreo')),
+            _buildTile(
+              'Ubicación de Alertas',
+              Icons.map,
+              () => Navigator.pushNamed(context, '/reportes-ubicacion'),
+            ),
+            _buildTile(
+              'Datos de Monitoreo',
+              Icons.analytics_outlined,
+              () => Navigator.pushNamed(context, '/monitoreo'),
+            ),
           ]),
           _buildGrupo('📈 Fuentes y Configuración', [
             _buildTile(
-                'Uso de fuentes de datos',
-                Icons.pie_chart,
-                () => Navigator.pushNamed(context, '/estadisticas-fuentes')),
+              'Uso de fuentes de datos',
+              Icons.pie_chart,
+              () => Navigator.pushNamed(context, '/estadisticas-fuentes'),
+            ),
             _buildTile(
-                'Evolución diaria por fuente',
-                Icons.timeline,
-                () => Navigator.pushNamed(context, '/estadisticas-evolucion')),
-            _buildTile('Gestionar Umbrales', Icons.tune,
-                () => Navigator.pushNamed(context, '/umbrales')),
+              'Evolución diaria por fuente',
+              Icons.timeline,
+              () => Navigator.pushNamed(context, '/estadisticas-evolucion'),
+            ),
+            _buildTile(
+              'Gestionar Umbrales',
+              Icons.tune,
+              () => Navigator.pushNamed(context, '/umbrales'),
+            ),
           ]),
         ],
       );
@@ -496,14 +588,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildGrupo('🚀 Acciones', [
-            _buildTile('Ver Alertas', Icons.warning_amber,
-                () => Navigator.pushNamed(context, '/alertas')),
-            _buildTile('Historial de Alertas', Icons.history,
-                () => Navigator.pushNamed(context, '/tabla-alertas')),
-            _buildTile('Alertas por Ubicación', Icons.place_outlined,
-                () => Navigator.pushNamed(context, '/alertas-ubicacion')),
-            _buildTile('Gráficas de Reportes', Icons.bar_chart,
-                () => Navigator.pushNamed(context, '/graficas-alertas')),
+            _buildTile(
+              'Ver Alertas',
+              Icons.warning_amber,
+              () => Navigator.pushNamed(context, '/alertas'),
+            ),
+            _buildTile(
+              'Historial de Alertas',
+              Icons.history,
+              () => Navigator.pushNamed(context, '/tabla-alertas'),
+            ),
+            _buildTile(
+              'Alertas por Ubicación',
+              Icons.place_outlined,
+              () => Navigator.pushNamed(context, '/alertas-ubicacion'),
+            ),
+            _buildTile(
+              'Gráficas de Reportes',
+              Icons.bar_chart,
+              () => Navigator.pushNamed(context, '/graficas-alertas'),
+            ),
           ]),
         ],
       );
@@ -587,7 +691,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           // ============= LOGOS DE HEADER AÑADIDOS AQUÍ =============
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5), // Ajusta la altura
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+            ), // Ajusta la altura
             child: Row(
               children: [
                 Image.asset(
@@ -603,8 +709,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
           ),
-          // ============= FIN DE LOGOS DE HEADER =============
 
+          // ============= FIN DE LOGOS DE HEADER =============
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () => Navigator.pushNamed(context, '/perfil'),

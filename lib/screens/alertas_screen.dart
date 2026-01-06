@@ -176,10 +176,11 @@ class _AlertasScreenState extends State<AlertasScreen> {
             ),
             children: [
               TileLayer(
-  // Mapa de relieve estable (ArcGIS World Topo)
-  urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-  userAgentPackageName: 'com.tesis.alertas',
-),
+                // Mapa de relieve estable (ArcGIS World Topo)
+                urlTemplate:
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                userAgentPackageName: 'com.tesis.alertas',
+              ),
               MarkerLayer(
                 markers: [
                   Marker(

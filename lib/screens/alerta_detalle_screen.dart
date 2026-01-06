@@ -31,7 +31,8 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
     'ODS 2': 'Hambre cero: Protección de cultivos y seguridad alimentaria',
     'ODS 3': 'Salud y bienestar: Protección de la salud ante desastres',
     'ODS 6': 'Agua limpia y saneamiento: Gestión eficiente del agua',
-    'ODS 9': 'Industria, innovación e infraestructura: Infraestructura resiliente',
+    'ODS 9':
+        'Industria, innovación e infraestructura: Infraestructura resiliente',
     'ODS 11': 'Ciudades sostenibles: Comunidades seguras y resilientes',
     'ODS 12': 'Producción y consumo responsables: Uso sostenible de recursos',
     'ODS 13': 'Acción por el clima: Medidas contra el cambio climático',
@@ -57,135 +58,195 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
     doc.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Header(
-              level: 0,
-              child: pw.Row(
-                children: [
-                  pw.Text('🛰️ ', style: pw.TextStyle(fontSize: 24)),
-                  pw.Text('Sistema de Alertas Tempranas', 
-                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
-                ],
-              ),
-            ),
-            pw.Text('📄 Reporte de alerta generado el: ${DateTime.now().toLocal()}'),
-            pw.Divider(),
-            pw.Text('🔔 Tipo: ${widget.alerta.tipo}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            pw.Text('🔴 Nivel: ${widget.alerta.nivel}', 
-              style: pw.TextStyle(color: _getPdfColorForNivel(widget.alerta.nivel))),
-            pw.Text('📍 Ubicación: ${widget.alerta.ubicacion}'),
-            pw.Text('📅 Fecha del evento: $fechaStr'),
-            pw.SizedBox(height: 12),
-            pw.Container(
-              padding: const pw.EdgeInsets.all(10),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(color: PdfColors.blue800),
-                borderRadius: pw.BorderRadius.circular(5),
-              ),
-              child: pw.Text('📝 Descripción: ${widget.alerta.descripcion}'),
-            ),
-            pw.SizedBox(height: 12),
-            pw.Row(
-              children: [
-                if (widget.alerta.temperatura != null) 
-                  _buildWeatherIconText('🌡️', 'Temp: ${widget.alerta.temperatura}°C'),
-                if (widget.alerta.humedad != null) 
-                  _buildWeatherIconText('💧', 'Humedad: ${widget.alerta.humedad}%'),
-              ],
-            ),
-            pw.Row(
-              children: [
-                if (widget.alerta.precipitacion != null) 
-                  _buildWeatherIconText('☔', 'Precipitación: ${widget.alerta.precipitacion} mm'),
-                if (widget.alerta.viento != null) 
-                  _buildWeatherIconText('🌬️', 'Viento: ${widget.alerta.viento} km/h'),
-              ],
-            ),
-            if (_capturaMapa != null) ...[
-              pw.SizedBox(height: 20),
-              pw.Text('🗺️ Mapa del evento:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 10),
-              pw.Container(
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.grey),
-                  borderRadius: pw.BorderRadius.circular(5),
-                ),
-                child: pw.Image(pw.MemoryImage(_capturaMapa!), height: 200),
-              ),
-            ],
-            pw.SizedBox(height: 20),
-            pw.Text('📌 Recomendaciones alineadas a los ODS:', 
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
-            pw.SizedBox(height: 10),
-            ...recomendaciones.map((r) => pw.Column(
+        build:
+            (pw.Context context) => pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
+                pw.Header(
+                  level: 0,
+                  child: pw.Row(
+                    children: [
+                      pw.Text('🛰️ ', style: pw.TextStyle(fontSize: 24)),
+                      pw.Text(
+                        'Sistema de Alertas Tempranas',
+                        style: pw.TextStyle(
+                          fontSize: 18,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.Text(
+                  '📄 Reporte de alerta generado el: ${DateTime.now().toLocal()}',
+                ),
+                pw.Divider(),
+                pw.Text(
+                  '🔔 Tipo: ${widget.alerta.tipo}',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Text(
+                  '🔴 Nivel: ${widget.alerta.nivel}',
+                  style: pw.TextStyle(
+                    color: _getPdfColorForNivel(widget.alerta.nivel),
+                  ),
+                ),
+                pw.Text('📍 Ubicación: ${widget.alerta.ubicacion}'),
+                pw.Text('📅 Fecha del evento: $fechaStr'),
+                pw.SizedBox(height: 12),
+                pw.Container(
+                  padding: const pw.EdgeInsets.all(10),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.blue800),
+                    borderRadius: pw.BorderRadius.circular(5),
+                  ),
+                  child: pw.Text(
+                    '📝 Descripción: ${widget.alerta.descripcion}',
+                  ),
+                ),
+                pw.SizedBox(height: 12),
                 pw.Row(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text('• ', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                    pw.Expanded(
-                      child: pw.Text(r['recomendacion']!, 
-                        style: pw.TextStyle(fontSize: 12)),
-                    ),
+                    if (widget.alerta.temperatura != null)
+                      _buildWeatherIconText(
+                        '🌡️',
+                        'Temp: ${widget.alerta.temperatura}°C',
+                      ),
+                    if (widget.alerta.humedad != null)
+                      _buildWeatherIconText(
+                        '💧',
+                        'Humedad: ${widget.alerta.humedad}%',
+                      ),
                   ],
                 ),
-                pw.SizedBox(height: 4),
-                pw.Text('(${r['ods']!}: ${_odsInfo[r['ods']] ?? ''})',
-                  style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
-                pw.SizedBox(height: 8),
+                pw.Row(
+                  children: [
+                    if (widget.alerta.precipitacion != null)
+                      _buildWeatherIconText(
+                        '☔',
+                        'Precipitación: ${widget.alerta.precipitacion} mm',
+                      ),
+                    if (widget.alerta.viento != null)
+                      _buildWeatherIconText(
+                        '🌬️',
+                        'Viento: ${widget.alerta.viento} km/h',
+                      ),
+                  ],
+                ),
+                if (_capturaMapa != null) ...[
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                    '🗺️ Mapa del evento:',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey),
+                      borderRadius: pw.BorderRadius.circular(5),
+                    ),
+                    child: pw.Image(pw.MemoryImage(_capturaMapa!), height: 200),
+                  ),
+                ],
+                pw.SizedBox(height: 20),
+                pw.Text(
+                  '📌 Recomendaciones alineadas a los ODS:',
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                ...recomendaciones.map(
+                  (r) => pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            '• ',
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                          pw.Expanded(
+                            child: pw.Text(
+                              r['recomendacion']!,
+                              style: pw.TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text(
+                        '(${r['ods']!}: ${_odsInfo[r['ods']] ?? ''})',
+                        style: pw.TextStyle(
+                          fontSize: 10,
+                          color: PdfColors.grey600,
+                        ),
+                      ),
+                      pw.SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Text(
+                  'ℹ️ Los Objetivos de Desarrollo Sostenible (ODS) son un llamado universal a la acción para poner fin a la pobreza, proteger el planeta y garantizar que todas las personas gocen de paz y prosperidad.',
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    fontStyle: pw.FontStyle.italic,
+                  ),
+                ),
               ],
-            )),
-            pw.SizedBox(height: 20),
-            pw.Text('ℹ️ Los Objetivos de Desarrollo Sostenible (ODS) son un llamado universal a la acción para poner fin a la pobreza, proteger el planeta y garantizar que todas las personas gocen de paz y prosperidad.',
-              style: pw.TextStyle(fontSize: 10, fontStyle: pw.FontStyle.italic)),
-          ],
-        ),
+            ),
       ),
     );
 
     final confirmacion = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Vista previa del PDF'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('¿Deseas guardar este reporte en PDF?'),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Vista previa del PDF'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('¿Deseas guardar este reporte en PDF?'),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'El PDF incluirá:\n- Detalles de la alerta\n- Mapa de ubicación\n- Recomendaciones ODS\n- Información meteorológica',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade800,
                 ),
-                child: const Text('El PDF incluirá:\n- Detalles de la alerta\n- Mapa de ubicación\n- Recomendaciones ODS\n- Información meteorológica',
-                  style: TextStyle(fontSize: 14)),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Guardar PDF'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade800,
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Guardar PDF'),
-          ),
-        ],
-      ),
     );
 
     if (confirmacion == true) {
-      await Printing.sharePdf(bytes: await doc.save(), filename: 'alerta_${widget.alerta.id}.pdf');
+      await Printing.sharePdf(
+        bytes: await doc.save(),
+        filename: 'alerta_${widget.alerta.id}.pdf',
+      );
     }
   }
 
@@ -211,56 +272,67 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
     if (tipo.contains('lluvia')) {
       recomendaciones.add({
         'ods': 'ODS 11',
-        'recomendacion': 'Evitar zonas inundables y revisar sistemas de drenaje para proteger ciudades y comunidades.'
+        'recomendacion':
+            'Evitar zonas inundables y revisar sistemas de drenaje para proteger ciudades y comunidades.',
       });
       recomendaciones.add({
         'ods': 'ODS 13',
-        'recomendacion': 'Reforzar techos y estructuras vulnerables ante lluvias intensas.'
+        'recomendacion':
+            'Reforzar techos y estructuras vulnerables ante lluvias intensas.',
       });
       if (nivel == 'alto') {
         recomendaciones.add({
           'ods': 'ODS 3',
-          'recomendacion': 'Preparar rutas de evacuación seguras y puntos de encuentro para la comunidad.'
+          'recomendacion':
+              'Preparar rutas de evacuación seguras y puntos de encuentro para la comunidad.',
         });
       }
     } else if (tipo.contains('helada')) {
       recomendaciones.add({
         'ods': 'ODS 2',
-        'recomendacion': 'Proteger cultivos sensibles con coberturas térmicas y riego por aspersión.'
+        'recomendacion':
+            'Proteger cultivos sensibles con coberturas térmicas y riego por aspersión.',
       });
       recomendaciones.add({
         'ods': 'ODS 13',
-        'recomendacion': 'Implementar sistemas de monitoreo de temperatura en zonas agrícolas críticas.'
+        'recomendacion':
+            'Implementar sistemas de monitoreo de temperatura en zonas agrícolas críticas.',
       });
       if (nivel == 'alto') {
         recomendaciones.add({
           'ods': 'ODS 1',
-          'recomendacion': 'Activar protocolos de ayuda a agricultores de pequeña escala.'
+          'recomendacion':
+              'Activar protocolos de ayuda a agricultores de pequeña escala.',
         });
       }
     } else if (tipo.contains('sequía')) {
       recomendaciones.add({
         'ods': 'ODS 6',
-        'recomendacion': 'Promover sistemas de riego eficientes como el riego por goteo.'
+        'recomendacion':
+            'Promover sistemas de riego eficientes como el riego por goteo.',
       });
       recomendaciones.add({
         'ods': 'ODS 12',
-        'recomendacion': 'Implementar sistemas de captación y reutilización de agua de lluvia.'
+        'recomendacion':
+            'Implementar sistemas de captación y reutilización de agua de lluvia.',
       });
       if (nivel == 'alto') {
         recomendaciones.add({
           'ods': 'ODS 13',
-          'recomendacion': 'Activar planes de emergencia hídrica con distribución controlada.'
+          'recomendacion':
+              'Activar planes de emergencia hídrica con distribución controlada.',
         });
       }
     } else if (tipo.contains('viento')) {
       recomendaciones.add({
         'ods': 'ODS 9',
-        'recomendacion': 'Revisar infraestructura crítica como torres de comunicación y tendido eléctrico.'
+        'recomendacion':
+            'Revisar infraestructura crítica como torres de comunicación y tendido eléctrico.',
       });
       recomendaciones.add({
         'ods': 'ODS 11',
-        'recomendacion': 'Asegurar techos, carteles y estructuras comunitarias vulnerables.'
+        'recomendacion':
+            'Asegurar techos, carteles y estructuras comunitarias vulnerables.',
       });
     }
 
@@ -268,13 +340,15 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
     if (widget.rol == 'admin') {
       recomendaciones.add({
         'ods': 'ODS 17',
-        'recomendacion': 'Revisar reportes técnicos y coordinar con instituciones especializadas.'
+        'recomendacion':
+            'Revisar reportes técnicos y coordinar con instituciones especializadas.',
       });
     }
     if (widget.rol == 'autoridad') {
       recomendaciones.add({
         'ods': 'ODS 11',
-        'recomendacion': 'Coordinar sistemas de alerta temprana con líderes comunitarios.'
+        'recomendacion':
+            'Coordinar sistemas de alerta temprana con líderes comunitarios.',
       });
     }
 
@@ -283,28 +357,40 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
 
   PdfColor _getPdfColorForNivel(String nivel) {
     switch (nivel.toLowerCase()) {
-      case 'alto': return PdfColors.red;
-      case 'medio': return PdfColor.fromInt(0xFFFFA500); // Naranja
-      case 'bajo': return PdfColor.fromInt(0xFFDAA520); // Amarillo oscuro
-      default: return PdfColors.grey;
+      case 'alto':
+        return PdfColors.red;
+      case 'medio':
+        return PdfColor.fromInt(0xFFFFA500); // Naranja
+      case 'bajo':
+        return PdfColor.fromInt(0xFFDAA520); // Amarillo oscuro
+      default:
+        return PdfColors.grey;
     }
   }
 
   Color _getColorForNivel(String nivel) {
     switch (nivel.toLowerCase()) {
-      case 'alto': return Colors.red;
-      case 'medio': return Colors.orange;
-      case 'bajo': return Colors.yellow.shade700;
-      default: return Colors.grey;
+      case 'alto':
+        return Colors.red;
+      case 'medio':
+        return Colors.orange;
+      case 'bajo':
+        return Colors.yellow.shade700;
+      default:
+        return Colors.grey;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final coord = widget.alerta.ubicacion.split(',');
-    final LatLng? punto = coord.length == 2
-        ? LatLng(double.tryParse(coord[0]) ?? 0.0, double.tryParse(coord[1]) ?? 0.0)
-        : null;
+    final LatLng? punto =
+        coord.length == 2
+            ? LatLng(
+              double.tryParse(coord[0]) ?? 0.0,
+              double.tryParse(coord[1]) ?? 0.0,
+            )
+            : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -371,11 +457,22 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      _buildDetailItem('📍', 'Ubicación', widget.alerta.ubicacion),
-                      _buildDetailItem('🔴', 'Nivel', widget.alerta.nivel,
-                        textColor: _getColorForNivel(widget.alerta.nivel)),
-                      _buildDetailItem('📅', 'Fecha', 
-                        widget.alerta.fecha.toLocal().toString().split('.')[0]),
+                      _buildDetailItem(
+                        '📍',
+                        'Ubicación',
+                        widget.alerta.ubicacion,
+                      ),
+                      _buildDetailItem(
+                        '🔴',
+                        'Nivel',
+                        widget.alerta.nivel,
+                        textColor: _getColorForNivel(widget.alerta.nivel),
+                      ),
+                      _buildDetailItem(
+                        '📅',
+                        'Fecha',
+                        widget.alerta.fecha.toLocal().toString().split('.')[0],
+                      ),
                       const SizedBox(height: 12),
                       Container(
                         width: double.infinity,
@@ -421,13 +518,29 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
                         runSpacing: 12,
                         children: [
                           if (widget.alerta.temperatura != null)
-                            _buildWeatherCard('🌡️', 'Temperatura', '${widget.alerta.temperatura}°C'),
+                            _buildWeatherCard(
+                              '🌡️',
+                              'Temperatura',
+                              '${widget.alerta.temperatura}°C',
+                            ),
                           if (widget.alerta.humedad != null)
-                            _buildWeatherCard('💧', 'Humedad', '${widget.alerta.humedad}%'),
+                            _buildWeatherCard(
+                              '💧',
+                              'Humedad',
+                              '${widget.alerta.humedad}%',
+                            ),
                           if (widget.alerta.precipitacion != null)
-                            _buildWeatherCard('☔', 'Precipitación', '${widget.alerta.precipitacion} mm'),
+                            _buildWeatherCard(
+                              '☔',
+                              'Precipitación',
+                              '${widget.alerta.precipitacion} mm',
+                            ),
                           if (widget.alerta.viento != null)
-                            _buildWeatherCard('🌬️', 'Viento', '${widget.alerta.viento} km/h'),
+                            _buildWeatherCard(
+                              '🌬️',
+                              'Viento',
+                              '${widget.alerta.viento} km/h',
+                            ),
                         ],
                       ),
                     ],
@@ -471,17 +584,22 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
                           options: MapOptions(center: punto, zoom: 13),
                           children: [
                             TileLayer(
-  // Mapa de relieve estable (ArcGIS World Topo)
-  urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-  userAgentPackageName: 'com.tesis.alertas',
-),
+                              // Mapa de relieve estable (ArcGIS World Topo)
+                              urlTemplate:
+                                  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                              userAgentPackageName: 'com.tesis.alertas',
+                            ),
                             MarkerLayer(
                               markers: [
                                 Marker(
                                   point: punto,
                                   width: 40,
                                   height: 40,
-                                  child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                  child: const Icon(
+                                    Icons.location_on,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
                                 ),
                               ],
                             ),
@@ -517,12 +635,17 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 12),
-                      ..._generarRecomendaciones().map((r) => Column(
-                        children: [
-                          _buildRecommendationCard(r['ods']!, r['recomendacion']!),
-                          const SizedBox(height: 8),
-                        ],
-                      )),
+                      ..._generarRecomendaciones().map(
+                        (r) => Column(
+                          children: [
+                            _buildRecommendationCard(
+                              r['ods']!,
+                              r['recomendacion']!,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         'ℹ️ Los Objetivos de Desarrollo Sostenible (ODS) son un llamado universal a la acción para poner fin a la pobreza, proteger el planeta y garantizar que todas las personas gocen de paz y prosperidad.',
@@ -542,21 +665,30 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade800,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () async {
-                      final exito = await AlertaService().marcarComoVista(widget.alerta.id);
+                      final exito = await AlertaService().marcarComoVista(
+                        widget.alerta.id,
+                      );
                       if (exito) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('✅ Alerta marcada como vista')),
+                          const SnackBar(
+                            content: Text('✅ Alerta marcada como vista'),
+                          ),
                         );
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('❌ Error al marcar la alerta')),
+                          const SnackBar(
+                            content: Text('❌ Error al marcar la alerta'),
+                          ),
                         );
                       }
                     },
@@ -593,7 +725,12 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
     );
   }
 
-  Widget _buildDetailItem(String icon, String label, String value, {Color? textColor}) {
+  Widget _buildDetailItem(
+    String icon,
+    String label,
+    String value, {
+    Color? textColor,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -645,10 +782,7 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              color: Colors.blue.shade800,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: Colors.blue.shade800, fontSize: 12),
           ),
           Text(
             value,
@@ -695,10 +829,7 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
               Expanded(
                 child: Text(
                   _odsInfo[ods] ?? '',
-                  style: TextStyle(
-                    color: Colors.blue.shade800,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.blue.shade800, fontSize: 12),
                 ),
               ),
             ],
@@ -706,10 +837,7 @@ class _AlertaDetalleScreenState extends State<AlertaDetalleScreen> {
           const SizedBox(height: 8),
           Text(
             recomendacion,
-            style: TextStyle(
-              color: Colors.blue.shade900,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: Colors.blue.shade900, fontSize: 14),
           ),
         ],
       ),

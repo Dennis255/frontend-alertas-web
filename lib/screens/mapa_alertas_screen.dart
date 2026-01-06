@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:url_launcher/url_launcher.dart'; // Añade esta importación
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-
-class MapaAlertasScreen extends StatelessWidget {
+class MapaAlertasScreen extends StatefulWidget {
   final String ubicacion;
   final String? tipoAlerta;
   final String? nivelAlerta;
@@ -17,24 +15,32 @@ class MapaAlertasScreen extends StatelessWidget {
     this.nivelAlerta,
   });
 
-  Color _getColorForAlertLevel(String? nivel) {
-  switch (nivel?.toLowerCase().trim()) {
-    case 'alto':
-      return Colors.red;   // ISO: Peligro
-    case 'medio':
-      return Colors.amber; // ISO: Precaución (Amarillo/Ámbar)
-    case 'bajo':
-      return Colors.green; // ISO: Seguridad (Verde)
-    default:
-      return Colors.grey;  // ISO: Sin información (Gris)
-  }
+  @override
+  State<MapaAlertasScreen> createState() => _MapaAlertasScreenState();
 }
+
+class _MapaAlertasScreenState extends State<MapaAlertasScreen> {
+  // Controlador para manejar el zoom
+  final MapController _mapController = MapController();
+
+  Color _getColorForAlertLevel(String? nivel) {
+    switch (nivel?.toLowerCase().trim()) {
+      case 'alto':
+        return Colors.red; // ISO: Peligro
+      case 'medio':
+        return Colors.amber; // ISO: Precaución
+      case 'bajo':
+        return Colors.green; // ISO: Seguridad
+      default:
+        return Colors.grey;
+    }
+  }
 
   Future<void> _openInExternalMaps(LatLng point) async {
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}');
     if (await canLaunchUrl(url)) {
-      await launchUrl(url);
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'No se pudo abrir $url';
     }
@@ -42,32 +48,35 @@ class MapaAlertasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final partes = ubicacion.split(',');
+    final partes = widget.ubicacion.split(',');
     final double lat = double.tryParse(partes[0]) ?? 0.0;
-    final double lon = double.tryParse(partes[1]) ?? 0.0;
+    final double lon = double.tryParse(partes.length > 1 ? partes[1] : '0.0') ?? 0.0;
     final punto = LatLng(lat, lon);
-    final alertColor = _getColorForAlertLevel(nivelAlerta);
+    final alertColor = _getColorForAlertLevel(widget.nivelAlerta);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            tipoAlerta != null ? "Alerta de $tipoAlerta" : "Ubicación de Alerta"),
+        title: Text(widget.tipoAlerta != null
+            ? "Alerta de ${widget.tipoAlerta}"
+            : "Ubicación de Alerta"),
         backgroundColor: const Color(0xFF1976D2),
         elevation: 4,
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
         actions: [
-          if (nivelAlerta != null)
+          if (widget.nivelAlerta != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
-                color: alertColor.withOpacity(0.2),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: alertColor, width: 1),
+                border: Border.all(color: Colors.white, width: 1),
               ),
               child: Text(
-                nivelAlerta!.toUpperCase(),
-                style: TextStyle(
-                  color: alertColor,
+                widget.nivelAlerta!.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -77,6 +86,7 @@ class MapaAlertasScreen extends StatelessWidget {
       body: Stack(
         children: [
           FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
               center: punto,
               zoom: 15.0,
@@ -84,21 +94,15 @@ class MapaAlertasScreen extends StatelessWidget {
               minZoom: 5.0,
             ),
             children: [
+              // ================== MAPA CORREGIDO AQUÍ ==================
               TileLayer(
-  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  subdomains: const ['a', 'b', 'c'],
-  userAgentPackageName: 'com.example.alerta_temprana',
-  tileProvider: CancellableNetworkTileProvider(), // ✅ cambio aquí
-  tileBuilder: (context, widget, tile) {
-    return ColorFiltered(
-      colorFilter: ColorFilter.mode(
-        Colors.blue.shade100.withOpacity(0.1),
-        BlendMode.darken,
-      ),
-      child: widget,
-    );
-  },
-),
+                // Usamos ArcGIS World Topo Map (Relieve estable)
+                urlTemplate:
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                userAgentPackageName: 'com.example.alerta_temprana',
+                // Eliminamos tileProvider complejo innecesario para ArcGIS
+              ),
+              // ========================================================
 
               MarkerLayer(
                 markers: [
@@ -117,14 +121,16 @@ class MapaAlertasScreen extends StatelessWidget {
               RichAttributionWidget(
                 attributions: [
                   TextSourceAttribution(
-                    'OpenStreetMap contributors',
+                    'Esri, USGS | OpenStreetMap',
                     onTap: () => launchUrl(
-                        Uri.parse('https://openstreetmap.org/copyright')),
+                        Uri.parse('https://www.esri.com/en-us/legal/copyright-trademarks')),
                   ),
                 ],
               ),
             ],
           ),
+          
+          // Tarjeta de información (Bottom)
           Positioned(
             bottom: 20,
             left: 20,
@@ -139,9 +145,9 @@ class MapaAlertasScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (tipoAlerta != null)
+                    if (widget.tipoAlerta != null)
                       Text(
-                        'Tipo: $tipoAlerta',
+                        'Tipo: ${widget.tipoAlerta}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -158,7 +164,7 @@ class MapaAlertasScreen extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () => _openInExternalMaps(punto),
                       icon: const Icon(Icons.open_in_new, size: 18),
-                      label: const Text('Abrir en Maps'),
+                      label: const Text('Abrir en Google Maps'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1976D2),
                         foregroundColor: Colors.white,
@@ -172,6 +178,8 @@ class MapaAlertasScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Botones de Zoom (Top Right)
           Positioned(
             top: 16,
             right: 16,
@@ -180,7 +188,7 @@ class MapaAlertasScreen extends StatelessWidget {
                 FloatingActionButton.small(
                   heroTag: 'zoomIn',
                   onPressed: () {
-                    // Lógica para zoom in
+                    _mapController.move(_mapController.center, _mapController.zoom + 1);
                   },
                   backgroundColor: Colors.white,
                   child: const Icon(Icons.add, color: Color(0xFF1976D2)),
@@ -189,7 +197,7 @@ class MapaAlertasScreen extends StatelessWidget {
                 FloatingActionButton.small(
                   heroTag: 'zoomOut',
                   onPressed: () {
-                    // Lógica para zoom out
+                    _mapController.move(_mapController.center, _mapController.zoom - 1);
                   },
                   backgroundColor: Colors.white,
                   child: const Icon(Icons.remove, color: Color(0xFF1976D2)),
@@ -201,7 +209,7 @@ class MapaAlertasScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Lógica para centrar mapa
+          _mapController.move(punto, 15.0);
         },
         backgroundColor: const Color(0xFF1976D2),
         child: const Icon(Icons.my_location, color: Colors.white),

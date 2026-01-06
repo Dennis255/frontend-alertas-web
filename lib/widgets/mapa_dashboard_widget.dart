@@ -17,7 +17,7 @@ class _MapaDashboardWidgetState extends State<MapaDashboardWidget> {
   Map<String, dynamic>? clima;
   bool _cargando = false;
 
-  String _mapaActual = 'relieve'; // 'relieve' o 'satelite'
+  String _mapaActual = 'relieve'; 
   final MapController _mapController = MapController();
 
   final Map<String, LatLng> coordenadasCiudades = {
@@ -38,6 +38,9 @@ class _MapaDashboardWidgetState extends State<MapaDashboardWidget> {
     super.didUpdateWidget(oldWidget);
     if (widget.ciudad != oldWidget.ciudad) {
       cargarClima();
+      if (coordenadasCiudades.containsKey(widget.ciudad)) {
+        _mapController.move(coordenadasCiudades[widget.ciudad]!, 13);
+      }
     }
   }
 
@@ -67,8 +70,8 @@ class _MapaDashboardWidgetState extends State<MapaDashboardWidget> {
             userAgentPackageName: 'com.tesis.alertas',
           )
         : TileLayer(
-            urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-            subdomains: const ['a', 'b', 'c'],
+            // Servidor estable de OpenStreetMap
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             userAgentPackageName: 'com.tesis.alertas',
           );
   }
@@ -95,10 +98,15 @@ class _MapaDashboardWidgetState extends State<MapaDashboardWidget> {
               MarkerLayer(
                 markers: [
                   Marker(
-                    width: 220,
-                    height: 100,
+                    width: 80,
+                    height: 80,
                     point: punto,
-                    child: const Icon(Icons.location_on, size: 40, color: Colors.red),
+                    // CORRECCIÓN AQUÍ: Usamos 'child' en lugar de 'builder'
+                    child: const Icon(
+                      Icons.location_on, 
+                      size: 40, 
+                      color: Colors.red
+                    ),
                   ),
                 ],
               ),
@@ -158,7 +166,7 @@ class _MapaDashboardWidgetState extends State<MapaDashboardWidget> {
                     });
                   },
                   icon: const Icon(Icons.map),
-                  label: Text(_mapaActual == 'relieve' ? 'Ver Satélite' : 'Ver Relieve'),
+                  label: Text(_mapaActual == 'relieve' ? 'Ver Satélite' : 'Ver Mapa'),
                 ),
               ],
             ),

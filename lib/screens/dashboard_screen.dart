@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       final response = await http.get(
         Uri.parse(
-            '${GlobalConfig.baseURL}/alertas/openweather?ciudad=$_ciudadSeleccionada')
+            '${GlobalConfig.baseURL}/api/alertas/openweather?ciudad=$_ciudadSeleccionada')
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -269,13 +269,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       zoom: 13,
                       interactiveFlags: InteractiveFlag.all),
                   children: [
-                    TileLayer(
-                      urlTemplate: _mapaActual == 'satelite'
-                          ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-                          : 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-                      subdomains: const ['a', 'b', 'c'],
-                      userAgentPackageName: 'com.tesis.alertas',
-                    ),
+                   TileLayer(
+  // Si el usuario elige satélite, muestra ArcGIS Satélite.
+  // Si elige relieve, muestra ArcGIS World Topo (Este tiene el relieve y las "franjas")
+  urlTemplate: _mapaActual == 'satelite'
+      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+      : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+  
+  // Esri no usa subdominios a,b,c como OpenTopoMap, así que quitamos esa línea.
+  userAgentPackageName: 'com.tesis.alertas',
+),
                     MarkerLayer(
                       markers: [
                         Marker(

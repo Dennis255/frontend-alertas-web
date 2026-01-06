@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
-
 
 class MapaSelectorScreen extends StatefulWidget {
   const MapaSelectorScreen({super.key});
@@ -84,28 +82,21 @@ class _MapaSelectorScreenState extends State<MapaSelectorScreen> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: const LatLng(-2.3398, -78.4352),
+              center: const LatLng(-2.3398, -78.4352), // Centro inicial
               zoom: _zoom,
               onTap: _onTapMapa,
               maxZoom: 18,
               minZoom: 5,
             ),
             children: [
+              // ================== MAPA CON RELIEVE ==================
               TileLayer(
-  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  subdomains: const ['a', 'b', 'c'],
-  userAgentPackageName: 'com.example.alerta_temprana',
-  tileProvider: CancellableNetworkTileProvider(), // ✅ cambio aquí
-  tileBuilder: (context, widget, tile) {
-    return ColorFiltered(
-      colorFilter: ColorFilter.mode(
-        Colors.blue.shade100.withOpacity(0.1),
-        BlendMode.darken,
-      ),
-      child: widget,
-    );
-  },
-),
+                // Usamos ArcGIS World Topo Map para ver montañas y relieve
+                urlTemplate:
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                userAgentPackageName: 'com.example.alerta_temprana',
+              ),
+              // ======================================================
 
               if (_puntoSeleccionado != null)
                 MarkerLayer(
@@ -124,6 +115,8 @@ class _MapaSelectorScreenState extends State<MapaSelectorScreen> {
                 ),
             ],
           ),
+          
+          // Panel inferior de información
           Positioned(
             bottom: 20,
             left: 20,
@@ -149,7 +142,7 @@ class _MapaSelectorScreenState extends State<MapaSelectorScreen> {
                     Text(
                       _puntoSeleccionado != null
                           ? "Lat: ${_puntoSeleccionado!.latitude.toStringAsFixed(5)}\nLon: ${_puntoSeleccionado!.longitude.toStringAsFixed(5)}"
-                          : "No seleccionada",
+                          : "No seleccionada (Toca el mapa)",
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 14,
@@ -160,6 +153,8 @@ class _MapaSelectorScreenState extends State<MapaSelectorScreen> {
               ),
             ),
           ),
+          
+          // Botones de Zoom
           Positioned(
             top: 20,
             right: 20,

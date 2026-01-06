@@ -107,30 +107,17 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   }
 
   Color _getNivelColor(String? nivel) {
-  // Normalizamos el texto para evitar errores por mayúsculas/minúsculas
-  switch (nivel?.toLowerCase().trim()) {
-    
-    // NIVEL ALTO -> ROJO (ISO: Peligro / Acción Inmediata)
-    case 'alto':
-      return Colors.red; 
-      // Opcional: Color(0xFFD32F2F) para un rojo con mejor contraste (Material 700)
-
-    // NIVEL MEDIO -> ÁMBAR (ISO: Precaución / Estar Atento)
-    // Se cambia Orange por Amber porque la ISO define el nivel medio como "Amarillo/Precaución"
-    case 'medio':
-      return Colors.amber; 
-      // Opcional: Color(0xFFFFA000) (Amber 700) para asegurar legibilidad en fondo blanco
-
-    // NIVEL BAJO -> VERDE (ISO: Seguridad / Sin Riesgo)
-    case 'bajo':
-      return Colors.green; 
-      // Opcional: Color(0xFF388E3C) para un verde menos brillante y más legible (Material 700)
-
-    // ESTADO DESCONOCIDO -> GRIS (ISO: Sin información)
-    default:
-      return Colors.grey;
+    switch (nivel?.toLowerCase().trim()) {
+      case 'alto':
+        return Colors.red;
+      case 'medio':
+        return Colors.amber;
+      case 'bajo':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +140,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
             : SingleChildScrollView(
                 child: Column(
                   children: [
-                    
                     // Encabezado
                     Container(
                       width: double.infinity,
@@ -172,12 +158,10 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           ),
                         ],
                       ),
-                      // ================== MODIFICACIÓN AQUÍ ==================
-                      child: Row( // Se cambió a Row para alinear texto y logos
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Columna de Texto (Izquierda)
-                          Expanded( // Para que el texto ocupe el espacio disponible
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -196,28 +180,23 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               ],
                             ),
                           ),
-                          //------INicio logos superior 
-                          const SizedBox(width: 20), // Espacio entre texto y logos
-
-                          // Logos (Derecha) - NUEVO
+                          const SizedBox(width: 20),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Image.asset(
-                                'assets/UNACH.png', // <-- RUTA DEL LOGO
-                                height: 80, // Altura del logo
-    
+                                'assets/UNACH.png',
+                                height: 80,
                               ),
-                              const SizedBox(width: 12), // Espacio entre logos
+                              const SizedBox(width: 12),
                               Image.asset(
-                                'assets/TI.png', // <-- RUTA DEL LOGO
-                                height: 100, // Altura del logo
+                                'assets/TI.png',
+                                height: 100,
                               ),
                             ],
                           ),
                         ],
                       ),
-                      // ================ FIN DE LA MODIFICACIÓN ================
                     ),
 
                     // Mapa
@@ -236,13 +215,15 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               FlutterMap(
                                 options: MapOptions(center: centro, zoom: 13),
                                 children: [
+                                  // ================== CORRECCIÓN DE MAPA AQUÍ ==================
                                   TileLayer(
                                     urlTemplate: _mapaActual == 'satelite'
                                         ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-                                        : 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-                                    subdomains: _mapaActual == 'satelite' ? [] : ['a', 'b', 'c'],
+                                        : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                                    // Eliminamos 'subdomains' porque ArcGIS no los usa y causaba errores con OpenTopoMap
                                     userAgentPackageName: 'com.tesis.alertas',
                                   ),
+                                  // =============================================================
                                   MarkerLayer(
                                     markers: alertas.map((alerta) {
                                       return Marker(
@@ -469,19 +450,18 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // ================== NUEVO FOOTER ==================
+                    // Footer
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       color: Colors.grey[200],
                       width: double.infinity,
                       child: Center(
                         child: Image.asset(
-                          'assets/SEAP.png', 
+                          'assets/SEAP.png',
                           fit: BoxFit.fitWidth,
                         ),
                       ),
                     ),
-                    // ================ FIN DEL FOOTER ================
                   ],
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/alerta_service.dart';
 import 'mapa_selector_screen.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter/services.dart'; // Necesario para inputFormatters
 
 class CrearAlertaScreen extends StatefulWidget {
   const CrearAlertaScreen({super.key});
@@ -15,7 +16,9 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
   final _ubicacionController = TextEditingController();
   final _descripcionController = TextEditingController();
   final _temperaturaController = TextEditingController();
-  final TextEditingController _zonaController = TextEditingController(text: 'Achupallas');
+  final TextEditingController _zonaController = TextEditingController(
+    text: 'Achupallas',
+  );
 
   final _humedadController = TextEditingController();
   final _precipitacionController = TextEditingController();
@@ -30,49 +33,65 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
 
   final AlertaService _alertaService = AlertaService();
 
-  final List<String> tipos = ['❄️ Helada', '🌊 Inundación', '💧 Sequía', '🌧️ Lluvia intensa', '🌬️ Vientos fuertes'];
+  final List<String> tipos = [
+    '❄️ Helada',
+    '🌊 Inundación',
+    '💧 Sequía',
+    '🌧️ Lluvia intensa',
+    '🌬️ Vientos fuertes',
+  ];
   final List<String> niveles = ['Bajo', 'Moderado', 'Alto', 'Extremo'];
 
-
   Future<void> _submit() async {
-    
     if (!_formKey.currentState!.validate()) return;
-    
+
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar creación de alerta', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text('¿Estás seguro de crear esta alerta? Esta acción será visible para todos los usuarios.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar', style: TextStyle(color: Color(0xFF3366CC))),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3366CC),
+      builder:
+          (context) => AlertDialog(
+            title: const Text(
+              'Confirmar creación de alerta',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirmar', style: TextStyle(color: Colors.white)),
+            content: const Text(
+              '¿Estás seguro de crear esta alerta? Esta acción será visible para todos los usuarios.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: Color(0xFF3366CC)),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3366CC),
+                ),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  'Confirmar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmar != true) return;
 
     setState(() => _isSubmitting = true);
 
-    if (_latitudController.text.isNotEmpty && _longitudController.text.isNotEmpty) {
-  _ubicacionController.text =
-      "${_latitudController.text.trim()},${_longitudController.text.trim()}";
-} else {
-  // Asignar coordenadas predeterminadas de Achupallas
-  _latitudController.text = '-2.216556';
-  _longitudController.text = '-78.667119';
-  _ubicacionController.text = '-2.216556,-78.667119';
-}
-
+    if (_latitudController.text.isNotEmpty &&
+        _longitudController.text.isNotEmpty) {
+      _ubicacionController.text =
+          "${_latitudController.text.trim()},${_longitudController.text.trim()}";
+    } else {
+      // Asignar coordenadas predeterminadas de Achupallas
+      _latitudController.text = '-2.216556';
+      _longitudController.text = '-78.667119';
+      _ubicacionController.text = '-2.216556,-78.667119';
+    }
 
     try {
       final success = await _alertaService.createAlerta(
@@ -85,7 +104,6 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
         precipitacion: _parseDouble(_precipitacionController.text),
         viento: _parseDouble(_vientoController.text),
         zona: _zonaController.text.trim(), //
-        
       );
 
       if (success) {
@@ -94,7 +112,9 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
             content: const Text('Alerta creada exitosamente'),
             backgroundColor: Colors.green[700],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
         Navigator.pop(context);
@@ -107,7 +127,9 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
           content: const Text('Error al crear la alerta'),
           backgroundColor: Colors.red[700],
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     } finally {
@@ -130,7 +152,8 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
       setState(() {
         _latitudController.text = ubicacion.latitude.toStringAsFixed(6);
         _longitudController.text = ubicacion.longitude.toStringAsFixed(6);
-        _ubicacionController.text = "${ubicacion.latitude.toStringAsFixed(6)},${ubicacion.longitude.toStringAsFixed(6)}";
+        _ubicacionController.text =
+            "${ubicacion.latitude.toStringAsFixed(6)},${ubicacion.longitude.toStringAsFixed(6)}";
         _bloquearLatLon = true;
       });
     }
@@ -154,7 +177,10 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crear Nueva Alerta', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Crear Nueva Alerta',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF3366CC),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -164,10 +190,7 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F9FF),
-              Colors.white,
-            ],
+            colors: [Color(0xFFF5F9FF), Colors.white],
           ),
         ),
         child: SingleChildScrollView(
@@ -184,7 +207,8 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
                       icon: Icons.category,
                       items: tipos,
                       value: _tipoSeleccionado,
-                      onChanged: (val) => setState(() => _tipoSeleccionado = val),
+                      onChanged:
+                          (val) => setState(() => _tipoSeleccionado = val),
                     ),
                     const SizedBox(height: 12),
                     _buildDropdown(
@@ -192,16 +216,18 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
                       icon: Icons.warning_amber,
                       items: niveles,
                       value: _nivelSeleccionado,
-                      onChanged: (val) => setState(() => _nivelSeleccionado = val),
+                      onChanged:
+                          (val) => setState(() => _nivelSeleccionado = val),
                     ),
                     const SizedBox(height: 12),
                     _buildUbicacionField(),
                     const SizedBox(height: 12),
                     _buildTextField(
                       _zonaController,
-  'Zona (predeterminada: Achupallas)',
-  icon: Icons.map,
-),const SizedBox(height: 12),
+                      'Zona (predeterminada: Achupallas)',
+                      icon: Icons.map,
+                    ),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -296,30 +322,34 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
                       ),
                       elevation: 2,
                     ),
-                    child: _isSubmitting
-                        ? const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                    child:
+                        _isSubmitting
+                            ? const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 ),
+                                SizedBox(width: 12),
+                                Text(
+                                  'Creando alerta...',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            )
+                            : const Text(
+                              'CREAR ALERTA',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                              SizedBox(width: 12),
-                              Text('Creando alerta...', style: TextStyle(color: Colors.white)),
-                            ],
-                          )
-                        : const Text(
-                            'CREAR ALERTA',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
                             ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -334,9 +364,7 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
   Widget _buildCard({required List<Widget> children}) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: children),
@@ -396,15 +424,33 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
     bool enabled = true,
     IconData? icon,
     int maxLines = 1,
+    String? suffix, // Nuevo: Para poner "°C", "%", etc.
   }) {
     return TextFormField(
       controller: controller,
       enabled: enabled,
-      keyboardType: isNumeric ? TextInputType.number : TextInputType.multiline,
+      // Si es numérico, usa teclado numérico con opciones de decimales
+      keyboardType:
+          isNumeric
+              ? const TextInputType.numberWithOptions(decimal: true)
+              : TextInputType.multiline,
       maxLines: maxLines,
+      // Restringir entrada solo a números y puntos decimales si es numérico
+      inputFormatters:
+          isNumeric
+              ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))]
+              : [],
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: icon != null ? Icon(icon, color: const Color(0xFF3366CC)) : null,
+        // Icono a la izquierda
+        prefixIcon:
+            icon != null ? Icon(icon, color: const Color(0xFF3366CC)) : null,
+        // Texto a la derecha (Unidad de medida)
+        suffixText: suffix,
+        suffixStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Colors.grey),
@@ -417,13 +463,20 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
         fillColor: enabled ? Colors.grey.shade50 : Colors.grey.shade200,
       ),
       validator: (value) {
-  if (!enabled) return null; // Si el campo está bloqueado, no validar
-  if (value == null || value.trim().isEmpty) return null; // PERMITIR VACÍO para asignar por defecto
-  if (isNumeric && double.tryParse(value.trim()) == null) {
-    return 'Ingrese un número válido';
-  }
-  return null;
-}
+        if (!enabled) return null;
+        if (value == null || value.trim().isEmpty) return null;
+
+        if (isNumeric) {
+          if (double.tryParse(value.trim()) == null) {
+            return 'Número inválido';
+          }
+          // Validaciones lógicas adicionales (opcional)
+          double val = double.parse(value.trim());
+          if (label.contains('Humedad') && (val < 0 || val > 100))
+            return '0-100%';
+        }
+        return null;
+      },
     );
   }
 
@@ -436,12 +489,8 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
   }) {
     return DropdownButtonFormField<String>(
       value: value,
-      items: items
-          .map((e) => DropdownMenuItem(
-                value: e,
-                child: Text(e),
-              ))
-          .toList(),
+      items:
+          items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -457,7 +506,11 @@ class _CrearAlertaScreenState extends State<CrearAlertaScreen> {
         filled: true,
         fillColor: Colors.grey.shade50,
       ),
-      validator: (value) => value == null || value.trim().isEmpty ? 'Selecciona una opción' : null,
+      validator:
+          (value) =>
+              value == null || value.trim().isEmpty
+                  ? 'Selecciona una opción'
+                  : null,
       dropdownColor: Colors.white,
       borderRadius: BorderRadius.circular(10),
       style: const TextStyle(color: Colors.black87),

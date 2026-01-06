@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:intl/intl.dart'; // al inicio del archivo
+// import 'package:intl/intl.dart'; // No se usa en el código actual, pero lo dejo si lo necesitas
 
 class PublicAlertaDetalleScreen extends StatelessWidget {
   final Map alerta;
@@ -52,7 +52,7 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, 
+                  Text(title,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.blue.shade800,
@@ -175,6 +175,7 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
               
               const SizedBox(height: 20),
               
+              // ================== MAPA CORREGIDO AQUÍ ==================
               if (punto != null)
                 Card(
                   elevation: 4,
@@ -189,9 +190,8 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
                         options: MapOptions(center: punto, zoom: 13),
                         children: [
                           TileLayer(
-                            urlTemplate:
-                                "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c'],
+                            // Usamos ArcGIS World Topo Map (Relieve estable)
+                            urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
                             userAgentPackageName: 'com.tesis.alertas',
                           ),
                           MarkerLayer(
@@ -211,6 +211,7 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+              // ========================================================
               
               const SizedBox(height: 24),
               
@@ -264,28 +265,15 @@ class PublicAlertaDetalleScreen extends StatelessWidget {
   }
 
   Color _getNivelColor(String? nivel) {
-  // Normalizamos el texto para evitar errores por mayúsculas/minúsculas
-  switch (nivel?.toLowerCase().trim()) {
-    
-    // NIVEL ALTO -> ROJO (ISO: Peligro / Acción Inmediata)
-    case 'alto':
-      return Colors.red; 
-      // Opcional: Color(0xFFD32F2F) para un rojo con mejor contraste (Material 700)
-
-    // NIVEL MEDIO -> ÁMBAR (ISO: Precaución / Estar Atento)
-    // Se cambia Orange por Amber porque la ISO define el nivel medio como "Amarillo/Precaución"
-    case 'medio':
-      return Colors.amber; 
-      // Opcional: Color(0xFFFFA000) (Amber 700) para asegurar legibilidad en fondo blanco
-
-    // NIVEL BAJO -> VERDE (ISO: Seguridad / Sin Riesgo)
-    case 'bajo':
-      return Colors.green; 
-      // Opcional: Color(0xFF388E3C) para un verde menos brillante y más legible (Material 700)
-
-    // ESTADO DESCONOCIDO -> GRIS (ISO: Sin información)
-    default:
-      return Colors.grey;
+    switch (nivel?.toLowerCase().trim()) {
+      case 'alto':
+        return Colors.red;
+      case 'medio':
+        return Colors.amber;
+      case 'bajo':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
-}
 }
